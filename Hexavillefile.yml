@@ -1,0 +1,22 @@
+name: HexavilleTODOExample
+service: aws
+aws:
+  # credential:
+  #   access_key_id: xxxxxxxxxxxxxxxxxx
+  #   secret_access_key: xxxxxxxxxxxxxxxxxx
+  # region: us-east-1
+  lambda:
+    bucket: hexaville-hexavilletodoexample-ywlye-bucket
+    role: xxxxxxxxxxxxxxxxxxxxxxxxxx
+#     vpc:
+#       subnetIds:
+#         - xxxxxx
+#         - xxxxxx
+#       securityGroupIds:
+#         - xxxxxx
+#         - xxxxxx
+# build:
+#   nocache: false
+# swift:
+#   build:
+#     configuration: release # default is debug
