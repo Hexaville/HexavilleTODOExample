@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hexaville TODO Example</title>
+    <!-- Imports -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <style>
+      .todo-container {
+        width: 500px;
+        margin: 5px auto;
+        margin-top: 20px;
+      }
+      .add-todo-container {
+        margin-bottom: 10px;
+      }
+      .add-todo-container .col-md-10 {
+        padding: 0;
+      }
+      .add-todo-container .col-md-2 {
+        padding-right: 0;
+        text-align: right;
+      }
+
+      .too-small {
+        display: none;
+      }
+
+      @media (max-width: 500px) {
+        .todo-container {
+          display: none;
+        }
+        .too-small {
+          display: block;
+        }
+      }
+    </style>
+    <style>
+    .menu
+      {
+        background-color: #2c3e50;
+        border-bottom: 4px solid #34495e;
+        width:100%;
+        height: auto;
+        padding: 0 10px;
+        margin: 0px;
+        z-index: 1;
+        opacity: 0.9;
+      }
+
+      .menu  .navbar-nav > .active > a
+      {
+        background-color : #04A3ED;
+        color: white;
+        font-weight: bold;
+      }
+
+      .menu  .navbar-nav >  li >  a
+      {
+        font-size: 13px;
+        color: white;
+        padding: 10px 35px;
+      }
+      .menu  .navbar-nav >  li >  a:hover
+      {
+        background-color: #04A3ED;
+      }
+
+      .navbar-header > a
+      {
+        font-family: 'Ubuntu Condensed', sans-serif;
+        padding: 0px;
+        margin: 0px;
+        text-decoration: none;
+        color: white;
+        font-size: 25px;
+        padding: 5px 30px;
+      }
+      .navbar-header > a:hover
+      {
+        text-decoration: none;
+        color: #04A3ED;
+      }
+    </style>
+
+    <script>
+      window.API_BASE_UEL = "{{apiBaseURL}}";
+      window.currentUser = {{userObject}};
+
+      // on document load
+      $(function(){
+        $("#profile-icon").attr("src", currentUser.avater_url);
+
+        // Data Model
+        var todos = [];
+        // Application
+        var template;
+        var app = {
+          init: function(){
+            app.compileTemplates();
+            app.render();
+
+            $.ajax({
+              type: "GET",
+              url: `${API_BASE_UEL}/api/todos`,
+              contentType:'application/json',
+            })
+            .then(function(responseBody){
+              todos = todos.concat(responseBody);
+              app.render();
+            });
+
+          },
+          render: function(){
+            // render the todos
+            var todoHtml = _.map(todos, function(todo){
+              return template(todo);
+            });
+            app.unbindEvents();
+            $('ul.list-group').html(todoHtml.join(""));
+            app.bindEvents();
+          },
+          compileTemplates: function(){
+            template = $('[type="text/x-template"]');
+            template = Handlebars.compile(template.first().html());
+          },
+          unbindEvents: function(){
+            $('.list-group-item').off();
+            $('.add-todo-container button').off();
+            $('input[type="checkbox"]').off();
+            $('.list-group-item button').off();
+          },
+          bindEvents: function(){
+            app.bindHoverEvents();
+            app.bindCheckboxEvents();
+            app.bindAddTodoEvents();
+            app.bindRemoveTodoEvents();
+          },
+          bindHoverEvents: function(){
+            var $items = $('.list-group-item');
+            $items.on('mouseover', function(event){
+              $(this).addClass('list-group-item-success');
+            });
+            $items.on('mouseout', function(){
+              $(this).removeClass('list-group-item-success');
+            });
+          },
+          bindCheckboxEvents: function(){
+            var $checkboxes = $('input[type="checkbox"]');
+            $checkboxes.on('change', function(){
+              var wasChecked = $(this).is(':checked');
+              if (!wasChecked) {
+                $(this).parent().parent().removeClass("disabled");
+              } else {
+                $(this).parent().parent().addClass("disabled");
+              }
+            });
+          },
+          bindAddTodoEvents: function(){
+            var $container = $('.add-todo-container');
+            $container.find('button').on('click', function(){
+              var newTodoTitle = $container.find('input').val();
+              if (_.isString(newTodoTitle) && newTodoTitle.length > 2) {
+                var newTodoObject = { text: newTodoTitle, completed: false };
+                $container.find('input').val("");
+              }
+              $.ajax({
+                type: "POST",
+                url: `${API_BASE_UEL}/api/todos`,
+                contentType:'application/json',
+                data: JSON.stringify({text: newTodoTitle})
+              })
+              .then(function(responseBody){
+                todos.push(responseBody);
+                app.render();
+              });
+            });
+          },
+          bindRemoveTodoEvents: function(){
+            $('.list-group-item button').on('click', function(ev){
+              const id = $(ev.currentTarget).data("id");
+              _.remove(todos, function(t){
+                return t.id == id;
+              });
+              app.render();
+              $.ajax({
+                type: "DELETE",
+                url: `${API_BASE_UEL}/api/todos/${id}`,
+                contentType:'application/json',
+              });
+            });
+          }
+        };
+        app.init();
+      });
+    </script>
+  </head>
+  <body>
+    <div class="menu">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a href="#">HexavilleTODOExample</a>
+        </div>
+        <div>
+          <ul class="nav navbar-nav navbar-right">
+            <li><img id="profile-icon" width="30"style="margin-top:6px;"/></li>
+            <li><a href="/staging/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Application -->
+    <div class="todo-container">
+      <div class="add-todo-container row">
+        <div class="col-xs-10">
+          <input class="form-control" type="text" placeholder="new todo">
+        </div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary">Add</button>
+        </div>
+      </div>
+      <ul class="list-group"></ul>
+    </div>
+    <div class="too-small"> This site does not support mobile. </div>
+
+    <!-- Templates -->
+    <script type="text/x-template">
+      <li id="{{id}}" class="list-group-item row {{#if completed}}disabled{{/if}}">
+        <div class="col-xs-1">
+          <input type="checkbox" {{#if completed}}checked{{/if}}>
+        </div>
+        <div class="col-xs-10">{{text}}</div>
+        <div class="col-xs-1">
+          <button type="button" class="close" aria-label="Close" data-id="{{id}}">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </li>
+    </script>
+  </body>
+</html>

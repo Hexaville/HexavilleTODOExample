@@ -1,0 +1,10 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+.routing-manifest.json
+__docker_shared
+Dockerfile
+.env
+Hexavillefile.production.yml
+build-swift.sh
