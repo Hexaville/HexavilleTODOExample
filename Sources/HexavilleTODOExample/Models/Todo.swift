@@ -11,7 +11,7 @@ struct TODOText: Decodable {
     let text: String
 }
 
-struct TODO: Codable, BaseModel {
+struct TODO: BaseModel {
     static let tableName = "hexaville_todo_app_example_todos"
     
     var id: String
@@ -40,3 +40,14 @@ struct TODO: Codable, BaseModel {
         case timestamp
     }
 }
+
+#if os(Linux)
+    extension TODO {
+        init(fromDictionary dict: [String: Any]) {
+            self.id = dict["id"] as! String
+            self.text = dict["text"] as! String
+            self.userId = dict["user_id"] as! String
+            self.timestamp = dict["timestamp"] as! Int
+        }
+    }
+#endif

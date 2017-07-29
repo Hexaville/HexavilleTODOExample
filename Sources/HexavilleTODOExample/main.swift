@@ -118,9 +118,7 @@ apiRouter.use(.post, middlewares: [authenticationMiddleware], "/api/todos", { re
 apiRouter.use(.delete, middlewares: [authenticationMiddleware], "/api/todos/:id", { request, context in
     let id = request.params!["id"] as! String
     guard let todo: TODO = try Connection.get(forKey: ConnectionName.dybamodb)?.fetch(byID: id) else {
-        let error = ErrorMessage(errorCode: nil, errorMessage: "Resource Not Found")
-        let body = try JSONEncoder().encode(error)
-        return Response(status: .notFound, body: body)
+        return Response(status: .notFound, body: "{\"error\": \"Resource Not Found\"}")
     }
     
     try Connection.get(forKey: ConnectionName.dybamodb)?.destroy(todo)

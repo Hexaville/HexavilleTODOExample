@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Codable, BaseModel {
+struct User: BaseModel {
     static let tableName = "hexaville_todo_app_example_users"
     
     let id: String
@@ -21,4 +21,22 @@ struct User: Codable, BaseModel {
         case email
         case avaterURLString = "avater_url"
     }
+    
+    init(id: String, name: String, avaterURLString: String, email: String) {
+        self.id = id
+        self.name = name
+        self.avaterURLString = avaterURLString
+        self.email = email
+    }
 }
+
+#if os(Linux)
+    extension User {
+        init(fromDictionary dict: [String: Any]) {
+            self.id = dict["id"] as! String
+            self.name = dict["name"] as! String
+            self.email = dict["email"] as! String
+            self.avaterURLString = dict["avater_url"] as! String
+        }
+    }
+#endif

@@ -58,10 +58,8 @@ enum DynamoDBAttributeItemDecoderError: Error {
 }
 
 struct DynamoDBAttributeItemEncoder {
-    static func encode<T: Encodable>(_ encodable: T) throws -> [String: Dynamodb.AttributeValue] {
-        let data = try JSONEncoder().encode(encodable)
-        let serialized = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        
+    static func encode<T: BaseModel>(_ encodable: T) throws -> [String: Dynamodb.AttributeValue] {
+        let serialized = try encodable.serializeToDictionary()
         var item: [String: Dynamodb.AttributeValue] = [:]
         for (key, value) in serialized {
             switch value {

@@ -18,9 +18,12 @@ extension ApplicationContext {
             if let user = self.memory["currentUser"] as? User {
                 return user
             }
-            
             if let dict = session?["currentUser"] as? [String: Any] {
-                let user: User = try dict.decode()
+                #if os(Linux)
+                    let user = User(fromDictionary: dict)
+                #else
+                    let user: User = try dict.decode()
+                #endif
                 self.memory["currentUser"] = user
                 return user
             }
