@@ -52,6 +52,7 @@ struct TODO: BaseModel {
     }
 }
 
+#if os(Linux)
 extension TODO {
     init(fromDictionary dictionary: [String : Any]) throws {
         self.id = dictionary["id"] as? String ?? ""
@@ -60,4 +61,4 @@ extension TODO {
         self.timestamp = dictionary["timestamp"] as? Int ?? 0
     }
 }
-
+#endif
