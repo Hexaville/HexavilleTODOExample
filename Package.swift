@@ -8,7 +8,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Hexaville/HexavilleAuth.git", .upToNextMajor(from: "0.4.0")),
-        .package(url: "https://github.com/Hexaville/DynamodbSessionStore.git", .upToNextMajor(from: "0.2.0"))
+        .package(url: "https://github.com/Hexaville/DynamodbSessionStore.git", .upToNextMajor(from: "0.2.0")),
+        .package(url: "https://github.com/kylef/Stencil.git", .upToNextMajor(from: "0.9.0")),
     ],
     targets: [
         .target(
@@ -16,6 +17,7 @@ let package = Package(
             dependencies: [
                 "HexavilleAuth",
                 "DynamodbSessionStore",
+                "Stencil"
             ]
         ),
     ]

@@ -4,6 +4,7 @@ import HexavilleAuth
 import DynamodbSessionStore
 import SwiftAWSDynamodb
 import Prorsum
+import Stencil
 
 let app = HexavilleFramework()
 var auth = HexavilleAuth()
@@ -73,11 +74,15 @@ var router = Router()
 
 router.use(.get, middlewares: [AuthenticationMiddleware()], "/") { request, context in
     let data = try AssetLoader.shared.load(fileInAssets: "/html/index.html")
-    //TemplateExtension
-    var tpl = String(data: data, encoding: .utf8)!
-    tpl = tpl.replacingOccurrences(of: "{{apiBaseURL}}", with: Configuration.shared.baseURLString)
-    tpl = tpl.replacingOccurrences(of: "{{userObject}}", with: try context.currentUser!.serializeToJSONString())
-    return Response(headers: ["Content-Type": "text/html"], body: tpl)
+    let environment = Environment(extensions: [TemplateExtension.shared.ext])
+    let rendered = try environment.renderTemplate(
+        string: String(data: data, encoding: .utf8) ?? "",
+        context: [
+            "apiBaseURL": Configuration.shared.baseURLString,
+            "userObject": try context.currentUser!.serializeToJSONString()
+        ]
+    )
+    return Response(headers: ["Content-Type": "text/html"], body: rendered)
 }
 
 router.use(.get, "/logout") { request, context in

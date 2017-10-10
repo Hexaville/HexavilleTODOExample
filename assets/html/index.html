@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <style>
       .todo-container {
@@ -127,8 +126,7 @@
             app.bindEvents();
           },
           compileTemplates: function(){
-            template = $('[type="text/x-template"]');
-            template = Handlebars.compile(template.first().html());
+            template = _.template($('[type="text/x-template"]').html());
           },
           unbindEvents: function(){
             $('.list-group-item').off();
@@ -210,7 +208,7 @@
         <div>
           <ul class="nav navbar-nav navbar-right">
             <li><img id="profile-icon" width="30"style="margin-top:6px;"/></li>
-            <li><a href="/staging/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            <li><a href='{{ "/logout"|link }}'><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
           </ul>
         </div>
       </div>
@@ -231,13 +229,13 @@
 
     <!-- Templates -->
     <script type="text/x-template">
-      <li id="{{id}}" class="list-group-item row {{#if completed}}disabled{{/if}}">
+        <li id="<%= id %>" class="list-group-item row">
         <div class="col-xs-1">
-          <input type="checkbox" {{#if completed}}checked{{/if}}>
+          <input type="checkbox">
         </div>
-        <div class="col-xs-10">{{text}}</div>
+        <div class="col-xs-10"><%= text %></div>
         <div class="col-xs-1">
-          <button type="button" class="close" aria-label="Close" data-id="{{id}}">
+          <button type="button" class="close" aria-label="Close" data-id="<%= id %>">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>

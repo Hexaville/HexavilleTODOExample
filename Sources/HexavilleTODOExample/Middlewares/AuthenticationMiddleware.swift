@@ -8,6 +8,7 @@
 import Foundation
 import HexavilleFramework
 import HexavilleAuth
+import Stencil
 
 enum HTTPContentType {
     case json
@@ -44,7 +45,9 @@ struct AuthenticationMiddleware: Middleware {
             return .respond(to: Response(status: .unauthorized, body: body))
         } else {
             let data = try AssetLoader.shared.load(fileInAssets: "/html/signin.html")
-            return .respond(to: Response(headers: ["Content-Type": "text/html"], body: data))
+            let environment = Environment(extensions: [TemplateExtension.shared.ext])
+            let rendered = try environment.renderTemplate(string: String(data: data, encoding: .utf8) ?? "")
+            return .respond(to: Response(headers: ["Content-Type": "text/html"], body: rendered))
         }
     }
 }
