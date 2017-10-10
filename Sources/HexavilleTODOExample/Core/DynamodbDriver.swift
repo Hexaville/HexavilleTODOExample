@@ -20,9 +20,7 @@ struct DynamodbDriver: DBDriver {
         let output = try dynamodb.scan(Dynamodb.ScanInput(tableName: Model.tableName))
         return try output.items?.map({
             let dictionary = try DynamoDBAttributeItemDecoder.decode($0)
-            let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
-            return try JSONDecoder().decode(Model.self, from: data)
-            //return try dictionary.decode()
+            return try DictionaryDecoder().decode(Model.self, from: dictionary)
         }) ?? []
     }
     
@@ -33,9 +31,7 @@ struct DynamodbDriver: DBDriver {
             return nil
         }
         let dictionary = try DynamoDBAttributeItemDecoder.decode(item)
-        let data = try JSONSerialization.data(withJSONObject: dictionary, options: [])
-        return try JSONDecoder().decode(Model.self, from: data)
-        //return try dictionary.decode()
+        return try DictionaryDecoder().decode(Model.self, from: dictionary)
     }
     
     func create<Model: BaseModel>(_ model: Model) throws -> Model {
@@ -71,19 +67,19 @@ struct DynamoDBAttributeItemEncoder {
                 item[key] = Dynamodb.AttributeValue(s: value)
                 
             case let value as [String]:
-                item[key] = Dynamodb.AttributeValue(sS: value)
+                item[key] = Dynamodb.AttributeValue(ss: value)
                 
             case let value as Int:
                 item[key] = Dynamodb.AttributeValue(n: "\(value)")
                 
             case let value as [Int]:
-                item[key] = Dynamodb.AttributeValue(nS: value.map({ "\($0)" }))
+                item[key] = Dynamodb.AttributeValue(ns: value.map({ "\($0)" }))
                 
             case _ as [String: Any]:
                 throw DynamoDBAttributeItemEncoderError.unsupportedAttributeType("Map")
                 
             case let value as Bool:
-                item[key] = Dynamodb.AttributeValue(bOOL: value)
+                item[key] = Dynamodb.AttributeValue(bool: value)
                 
             default:
                 item[key] = Dynamodb.AttributeValue(s: "\(value)")
@@ -106,13 +102,13 @@ struct DynamoDBAttributeItemDecoder {
                 // should care all numeric types
                 item[key] = Int(v)!
             }
-            else if let v = value.bOOL {
+            else if let v = value.bool {
                 item[key] = v
             }
-            else if let v = value.nS {
+            else if let v = value.ns {
                 item[key] = v
             }
-            else if let v = value.sS {
+            else if let v = value.ss {
                 // should care all numeric types
                 item[key] = v.map({ Int($0)! })
             } else {

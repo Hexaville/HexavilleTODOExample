@@ -69,10 +69,11 @@ auth.add(githubProvider)
 app.use(HexavilleAuth.AuthenticationMiddleware())
 app.use(auth)
 
-let router = Router()
+var router = Router()
 
 router.use(.get, middlewares: [AuthenticationMiddleware()], "/") { request, context in
     let data = try AssetLoader.shared.load(fileInAssets: "/html/index.html")
+    //TemplateExtension
     var tpl = String(data: data, encoding: .utf8)!
     tpl = tpl.replacingOccurrences(of: "{{apiBaseURL}}", with: Configuration.shared.baseURLString)
     tpl = tpl.replacingOccurrences(of: "{{userObject}}", with: try context.currentUser!.serializeToJSONString())
@@ -90,7 +91,7 @@ router.use(.get, "/logout") { request, context in
     )
 }
 
-let apiRouter = Router()
+var apiRouter = Router()
 
 let authenticationMiddleware = AuthenticationMiddleware()
 

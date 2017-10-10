@@ -22,14 +22,3 @@ struct User: BaseModel {
         case avaterUrl = "avater_url"
     }
 }
-
-#if os(Linux)
-extension User {
-    init(fromDictionary dictionary: [String : Any]) throws {
-        self.id = dictionary["id"] as? String ?? ""
-        self.name = dictionary["name"] as? String ?? ""
-        self.avaterUrl = dictionary["avater_url"] as? String ?? ""
-        self.email = dictionary["email"] as? String ?? ""
-    }
-}
-#endif

@@ -5,7 +5,6 @@
 //  Created by Yuki Takei on 2017/07/28.
 //
 
-import Foundation
 import HexavilleFramework
 
 extension ApplicationContext {

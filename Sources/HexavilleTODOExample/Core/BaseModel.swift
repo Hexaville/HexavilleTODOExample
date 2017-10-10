@@ -22,6 +22,8 @@ extension BaseModel {
     }
     
     func serializeToDictionary() throws -> [String: Any] {
+        // Not efficient
+        // Should prepare DictionaryEncoder to directly encode Swift Type to Dictionary
         let data = try self.serializeToJSONUTF8Data()
         return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
     }

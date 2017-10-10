@@ -11,17 +11,6 @@ struct TODOText: Codable {
     let text: String
 }
 
-#if os(Linux)
-extension TODOText {
-    init(fromDictionary: [String : Any]) throws {
-        guard let text = fromDictionary["text"] as? String else {
-            throw Decodable2Error.decodeFailed("text")
-        }
-        self.text = text
-    }
-}
-#endif
-
 struct TODO: BaseModel {
     static let tableName = "hexaville_todo_app_example_todos"
     
@@ -51,14 +40,3 @@ struct TODO: BaseModel {
         case timestamp
     }
 }
-
-#if os(Linux)
-extension TODO {
-    init(fromDictionary dictionary: [String : Any]) throws {
-        self.id = dictionary["id"] as? String ?? ""
-        self.text = dictionary["text"] as? String ?? ""
-        self.userId = dictionary["user_id"] as? String ?? ""
-        self.timestamp = dictionary["timestamp"] as? Int ?? 0
-    }
-}
-#endif
