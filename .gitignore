@@ -8,3 +8,4 @@ Dockerfile
 .env
 Hexavillefile.production.yml
 build-swift.sh
+DynamodbSessionStore
