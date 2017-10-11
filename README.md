@@ -36,8 +36,8 @@ Export dynamodb endpoint and GitHub OAuth Application credential as Environment 
 
 ```
 export DYNAMODB_ENDPOINT=http://localhost:8000
-GITHUB_APP_ID=xxxxxxxxxxxxxxxxxxx
-GITHUB_APP_SECRET=xxxxxxxxxxxxxxxxxxx
+export GITHUB_APP_ID=xxxxxxxxxxxxxxxxxxx
+export GITHUB_APP_SECRET=xxxxxxxxxxxxxxxxxxx
 ```
 
 ## 3. Build HexavilleTODOExample
