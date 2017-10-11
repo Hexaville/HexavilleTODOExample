@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import HexavilleFramework
 
 enum HexavilleENV {
     case production
@@ -36,22 +37,10 @@ enum HexavilleENV {
 struct Configuration {
     static let shared = Configuration()
     
-    let env: HexavilleENV
+    let env = HexavilleENV(rawValue: ProcessInfo.processInfo.environment["HEXAVILLE_ENV"])
     
-    let baseURLString: String
-    
-    init(){
-        env = HexavilleENV(rawValue: ProcessInfo.processInfo.environment["HEXAVILLE_ENV"])
-        switch env {
-        case .production:
-            guard let baseURL = ProcessInfo.processInfo.environment["HEXAVILLE_BASE_URL"] else {
-                fatalError("HEXAVILLE_BASE_URL is required in .env")
-            }
-            baseURLString = baseURL
-            
-        case .development:
-            baseURLString = "http://localhost:3000"
-        }
+    var baseURLString: String {
+        return HostResolver.shared.resolveBaseURLString() ?? "http://localhost:3000"
     }
 }
 
